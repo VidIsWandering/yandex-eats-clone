@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:firebase_authentication_client/firebase_authentication_client.dart';
 import 'package:token_storage/token_storage.dart';
 import 'package:user_repository/user_repository.dart';
@@ -15,8 +13,6 @@ void main() async {
     final userRepository = UserRepository(
       authenticationClient: firebaseAuthenticationClient,
     );
-
-    log('${(await userRepository.user.first).name}');
 
     return App(
       userRepository: userRepository,

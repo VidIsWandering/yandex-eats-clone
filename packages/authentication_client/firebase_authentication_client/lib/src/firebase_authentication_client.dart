@@ -12,9 +12,9 @@ class FirebaseAuthenticationClient implements AuthenticationClient {
     required TokenStorage tokenStorage,
     firebase_auth.FirebaseAuth? firebaseAuth,
     GoogleSignIn? googleSignIn,
-  })  : _tokenStorage = tokenStorage,
-        _firebaseAuth = firebaseAuth ?? firebase_auth.FirebaseAuth.instance,
-        _googleSignIn = googleSignIn ?? GoogleSignIn.standard() {
+  }) : _tokenStorage = tokenStorage,
+       _firebaseAuth = firebaseAuth ?? firebase_auth.FirebaseAuth.instance,
+       _googleSignIn = googleSignIn ?? GoogleSignIn.standard() {
     user.listen(_onUserChanged);
   }
 
@@ -132,15 +132,6 @@ class FirebaseAuthenticationClient implements AuthenticationClient {
     }
   }
 
-  /// Updates the user token in [TokenStorage] if the user is authenticated.
-  Future<void> _onUserChanged(AuthenticationUser user) async {
-    if (!user.isAnonymous) {
-      await _tokenStorage.saveToken(user.id);
-    } else {
-      await _tokenStorage.clearToken();
-    }
-  }
-
   @override
   Future<void> logInWithPassword({
     required String password,
@@ -176,6 +167,15 @@ class FirebaseAuthenticationClient implements AuthenticationClient {
       );
     } catch (error, stackTrace) {
       Error.throwWithStackTrace(SignUpWithPasswordFailure(error), stackTrace);
+    }
+  }
+
+  /// Updates the user token in [TokenStorage] if the user is authenticated.
+  Future<void> _onUserChanged(AuthenticationUser user) async {
+    if (!user.isAnonymous) {
+      await _tokenStorage.saveToken(user.id);
+    } else {
+      await _tokenStorage.clearToken();
     }
   }
 }

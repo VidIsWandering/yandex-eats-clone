@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_catches_without_on_clauses, document_ignores
+
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
@@ -16,7 +18,10 @@ class AppBloc extends Bloc<AppEvent, AppState> {
             : AppState.authenticated(user),
       ) {
     on<AppUserChanged>(_onAppUserChanged);
-    on<AppLogoutRequest>(_onAppLogoutRequest);
+    on<AppUpdateAccountRequested>(_onAppUpdateAccountRequested);
+    on<AppUpdateAccountEmailRequested>(_onAppUpdateAccountEmailRequested);
+    on<AppDeleteAccountRequested>(_onAppDeleteAccountRequested);
+    on<AppLogoutRequested>(_onAppLogoutRequested);
 
     _userSubscription = _userRepository.user.listen(
       _userChanged,
@@ -53,8 +58,45 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     return super.close();
   }
 
-  void _onAppLogoutRequest(
-    AppLogoutRequest event,
+  FutureOr<void> _onAppUpdateAccountRequested(
+    AppUpdateAccountRequested event,
+    Emitter<AppState> emit,
+  ) async {
+    try {
+      await _userRepository.updateProfile(username: event.username);
+    } catch (error, stackTrace) {
+      addError(error, stackTrace);
+    }
+  }
+
+  FutureOr<void> _onAppUpdateAccountEmailRequested(
+    AppUpdateAccountEmailRequested event,
+    Emitter<AppState> emit,
+  ) async {
+    try {
+      await _userRepository.updateEmail(
+        email: event.email,
+        password: event.password,
+      );
+    } catch (error, stackTrace) {
+      addError(error, stackTrace);
+    }
+  }
+
+  FutureOr<void> _onAppDeleteAccountRequested(
+    AppDeleteAccountRequested event,
+    Emitter<AppState> emit,
+  ) async {
+    try {
+      await _userRepository.deleteAccount();
+    } catch (error, stackTrace) {
+      await _userRepository.logOut();
+      addError(error, stackTrace);
+    }
+  }
+
+  void _onAppLogoutRequested(
+    AppLogoutRequested event,
     Emitter<AppState> emit,
   ) {
     unawaited(_userRepository.logOut());

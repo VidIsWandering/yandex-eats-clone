@@ -1,6 +1,10 @@
 enum AppRoutes {
   auth('/auth'),
-  home('/home');
+  restaurants('/restaurants'),
+  cart('/cart'),
+  profile('/profile'),
+  orders('/orders'),
+  updateEmail('/update-email');
 
   const AppRoutes(this.route);
 
